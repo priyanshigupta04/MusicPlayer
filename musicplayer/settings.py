@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-=wv2-wau^3sel%5y-ru68^e&=!p)d0q*0je@tvn5uu$v_mklm!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['musicplayer.vercel.app','127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['musicplayer.vercel.app','127.0.0.1']
 
 
 # Application definition
@@ -124,3 +124,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
