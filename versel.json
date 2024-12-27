@@ -1,0 +1,18 @@
+{
+    "builds": [
+      {
+        "src": "musicplayer/wsgi.py",
+        "use": "@vercel/python",
+        "config": {
+          "maxDuration": 10
+        }
+      }
+    ],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "musicplayer/wsgi.py"
+      }
+    ]
+  }
+  
