@@ -16,3 +16,6 @@ def song_list(request):
 
     return render(request, 'player/song_list.html', {'songs': songs, 'form': form})
 
+def handling_404Error(request,exception):
+    return render(request, 'player/templates/song_list.html')
+
