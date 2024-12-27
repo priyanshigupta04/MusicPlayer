@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Player</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #f39c12;
+            margin-bottom: 40px;
+            font-size: 3em;
+        }
+
+        h2 {
+            color: #e67e22;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            background-color: #1e1e1e;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        li:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.5);
+        }
+
+        h3 {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #ecf0f1;
+        }
+
+        audio {
+            width: 100%;
+            outline: none;
+            border-radius: 5px;
+            background-color: #333;
+        }
+
+        #uploadForm {
+            background-color: #1e1e1e;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.4);
+            margin-top: 40px;
+            max-width: 500px;
+            margin: 0 auto;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+            border: 1px solid #f39c12;
+        }
+
+        #uploadForm h2 {
+            color: #f39c12;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        #uploadForm.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ecf0f1;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #f39c12;
+            background-color: #2c2c2c;
+            color: #ecf0f1;
+            font-size: 1em;
+        }
+
+        input[type="submit"] {
+            background-color: #f39c12;
+            color: #ffffff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #e67e22;
+            transform: scale(1.05);
+        }
+
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            margin-bottom: 20px;
+        }
+
+        .messages li {
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: #2c3e50;
+            background-color: #ecf0f1;
+        }
+
+        .messages .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .messages .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 1em;
+            color: #bbbbbb;
+        }
+
+        #addSongBtn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #f39c12;
+            color: #ffffff;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #addSongBtn:hover {
+            background-color: #e67e22;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>My Music Player</h1>
+
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div id="uploadForm">
+        <h2>Upload a Song</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="{{ form.title.id_for_label }}">Title:</label>
+            {{ form.title }}
+            <label for="{{ form.artist.id_for_label }}">Artist:</label>
+            {{ form.artist }}
+            <label for="{{ form.audio_file.id_for_label }}">Audio File:</label>
+            {{ form.audio_file }}
+            <input type="submit" value="Upload Song">
+        </form>
+    </div>
+
+    <h2>Playlist</h2>
+    <ul id="playlist">
+    {% for song in songs %}
+        <li>
+            <h3>{{ song.title }} - {{ song.artist }}</h3>
+            <audio controls data-title="{{ song.title }}" data-artist="{{ song.artist }}">
+                <source src="{{ song.audio_file.url }}" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </li>
+    {% endfor %}
+    </ul>
+
+    <div id="addSongBtn">
+        <i class="fas fa-plus"></i>
+    </div>
+
+    <div class="footer">
+        &copy; 2024 My Music Player. All rights reserved.
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const playlist = document.getElementById('playlist');
+            let currentlyPlaying = null;
+
+            playlist.addEventListener('play', function(e) {
+                if (e.target.tagName === 'AUDIO') {
+                    if (currentlyPlaying && currentlyPlaying !== e.target) {
+                        currentlyPlaying.pause();
+                    }
+                    currentlyPlaying = e.target;
+                    
+                    // Announce the now playing song for screen readers
+                    const title = e.target.getAttribute('data-title');
+                    const artist = e.target.getAttribute('data-artist');
+                    announceNowPlaying(title, artist);
+                }
+            }, true);
+
+            function announceNowPlaying(title, artist) {
+                const announcement = document.createElement('div');
+                announcement.setAttribute('aria-live', 'polite');
+                announcement.textContent = `Now playing: ${title} by ${artist}`;
+                document.body.appendChild(announcement);
+                
+                // Remove the announcement after it's been read
+                setTimeout(() => {
+                    document.body.removeChild(announcement);
+                }, 1000);
+            }
+
+            // Add Song Button Functionality
+            const addSongBtn = document.getElementById('addSongBtn');
+            const uploadForm = document.getElementById('uploadForm');
+
+            addSongBtn.addEventListener('click', function() {
+                uploadForm.classList.toggle('visible');
+                if (uploadForm.classList.contains('visible')) {
+                    uploadForm.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+
